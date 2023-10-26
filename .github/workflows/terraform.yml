@@ -83,7 +83,7 @@ jobs:
       - name: Terraform Apply
         run: |
           cd terraform/staging
-          terraform apply 
+          terraform apply --auto-approve--auto-approve
 
   terraform-plan-prod:
     needs: terraform-apply-staging
@@ -158,4 +158,4 @@ jobs:
       - name: Terraform Apply
         run: |
           cd terraform/prod
-          terraform apply 
+          terraform apply --auto-approve
