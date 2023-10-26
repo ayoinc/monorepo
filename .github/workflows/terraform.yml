@@ -36,7 +36,7 @@ jobs:
       - name: Terraform Plan
         run: |
           cd terraform/staging
-          terraform plan -var="github_sha=${{ github.sha }}" plan.out
+          terraform plan -var="github_sha=${{ github.sha }}" 
 
 
       - name: Archive Terraform data
@@ -83,7 +83,7 @@ jobs:
       - name: Terraform Apply
         run: |
           cd terraform/staging
-          terraform apply plan.out
+          terraform apply 
 
   terraform-plan-prod:
     needs: terraform-apply-staging
@@ -112,7 +112,7 @@ jobs:
       - name: Terraform Plan
         run: |
           cd terraform/prod
-          terraform plan -var="github_sha=${{ github.sha }}" plan.out
+          terraform plan -var="github_sha=${{ github.sha }}" 
 
       - name: Archive Terraform data
         run: |
@@ -158,4 +158,4 @@ jobs:
       - name: Terraform Apply
         run: |
           cd terraform/prod
-          terraform apply plan.out
+          terraform apply 
