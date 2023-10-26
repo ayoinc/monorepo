@@ -61,7 +61,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: terraform-data-staging
-          path: terraform/staging
+          path: .
 
       - name: Unarchive Terraform data
         run: |
@@ -136,7 +136,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: terraform-data-prod
-          path: terraform/prod
+          path: .
 
       - name: Unarchive Terraform data
         run: |
