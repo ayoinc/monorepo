@@ -20,7 +20,7 @@ resource "null_resource" "push_docker_image" {
 }
 
 resource "docker_image" "node" {
-  name = "${data.aws_caller_identity.current.account_id}-node"
+  name = "${data.aws_caller_identity.current.account_id}-node:${var.github_sha}"
   build {
     context = "${path.module}/../../../App/"
   }
