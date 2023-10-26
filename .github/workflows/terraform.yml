@@ -7,6 +7,7 @@ on:
 
 env:
   TF_VERSION: 1.6.2
+  AWS_REGION: "eu-west-2"
 
 jobs:
   terraform-plan:
@@ -16,19 +17,22 @@ jobs:
         environment: ['staging', 'prod']
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: hashicorp/terraform-github-actions/init@v0.4.0
         with:
+          TF_ACTION_WORKING_DIR: 'terraform'
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-west-2  # Change this to your AWS region
-
+          aws-region: ${{ env.AWS_REGION }}
+      
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: ${{ env.TF_VERSION }}
+          
 
       - name: Terraform Init
         run: |
@@ -57,19 +61,22 @@ jobs:
         environment: ['staging', 'prod']
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: hashicorp/terraform-github-actions/init@v0.4.0
         with:
+          TF_ACTION_WORKING_DIR: 'terraform'
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-west-2  # Change this to your AWS region
-
+          aws-region: ${{ env.AWS_REGION }}
+      
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: ${{ env.TF_VERSION }}
+          
 
       - name: Download Terraform Plan
         uses: actions/download-artifact@v2
