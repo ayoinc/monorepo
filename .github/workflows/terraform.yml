@@ -40,7 +40,7 @@ jobs:
       - name: Terraform Plan
         run: |
           cd terraform/${{ matrix.environment }}
-          terraform plan -var-file=input.tf -out=plan.out
+          terraform plan -out=plan.out
 
       - name: Upload Terraform Plan
         uses: actions/upload-artifact@v2
