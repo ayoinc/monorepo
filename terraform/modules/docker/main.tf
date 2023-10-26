@@ -4,7 +4,6 @@ data "aws_caller_identity" "current" {}
 // Create an ECR repository
 resource "aws_ecr_repository" "repository" {
   name = var.repository_name
-  force_delete = true // This is not recommended, only for Development purposes
 }
 
 // Tag and push the Docker image to the ECR repository
