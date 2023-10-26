@@ -40,7 +40,7 @@ jobs:
 
       - name: Archive Terraform data
         run: |
-          tar -czvf terraform-staging-data.tar.gz -C terraform/staging/plan.out . 
+          tar -czvf terraform-staging-data.tar.gz -C terraform/staging terraform/staging/plan.out
 
       - name: Upload Terraform data
         uses: actions/upload-artifact@v2
@@ -115,7 +115,7 @@ jobs:
 
       - name: Archive Terraform data
         run: |
-          tar -czvf terraform-prod-data.tar.gz -C terraform/prod/plan.out . 
+          tar -czvf terraform-prod-data.tar.gz -C terraform/prod terraform/prod/plan.out
 
       - name: Upload Terraform data
         uses: actions/upload-artifact@v2
