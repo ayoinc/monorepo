@@ -10,77 +10,135 @@ env:
   AWS_REGION: "eu-west-2"
 
 jobs:
-  terraform-plan:
+  terraform-plan-staging:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        environment: ['staging', 'prod']
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Configure AWS Credentials
-        uses: hashicorp/terraform-github-actions/init@v0.4.0
+        uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
-      
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: ${{ env.TF_VERSION }}
-          
 
       - name: Terraform Init
         run: |
-          cd terraform/${{ matrix.environment }}
+          cd terraform/staging
           terraform init
 
       - name: Terraform Plan
         run: |
-          cd terraform/${{ matrix.environment }}
+          cd terraform/staging
           terraform plan -out=plan.out
 
       - name: Upload Terraform Plan
         uses: actions/upload-artifact@v2
         with:
-          name: terraform-plan-${{ matrix.environment }}
-          path: terraform/${{ matrix.environment }}/plan.out
+          name: terraform-plan-staging
+          path: terraform/staging/plan.out
 
-  terraform-apply:
-    needs: terraform-plan
+  terraform-apply-staging:
+    needs: terraform-plan-staging
     runs-on: ubuntu-latest
     environment:
-      name: ${{ matrix.environment }}
-      url: ${{ steps.deploy.outputs.url }}
-    strategy:
-      matrix:
-        environment: ['staging', 'prod']
+      name: staging
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Configure AWS Credentials
-        uses: hashicorp/terraform-github-actions/init@v0.4.0
+        uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
-      
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: ${{ env.TF_VERSION }}
-          
 
       - name: Download Terraform Plan
         uses: actions/download-artifact@v2
         with:
-          name: terraform-plan-${{ matrix.environment }}
-          path: terraform/${{ matrix.environment }}
+          name: terraform-plan-staging
+          path: terraform/staging
 
       - name: Terraform Apply
         run: |
-          cd terraform/${{ matrix.environment }}
+          cd terraform/staging
+          terraform apply plan.out
+
+  terraform-plan-prod:
+    needs: terraform-apply-staging
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terraform Init
+        run: |
+          cd terraform/prod
+          terraform init
+
+      - name: Terraform Plan
+        run: |
+          cd terraform/prod
+          terraform plan -out=plan.out
+
+      - name: Upload Terraform Plan
+        uses: actions/upload-artifact@v2
+        with:
+          name: terraform-plan-prod
+          path: terraform/prod/plan.out
+
+  terraform-apply-prod:
+    needs: terraform-plan-prod
+    runs-on: ubuntu-latest
+    environment:
+      name: prod
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Download Terraform Plan
+        uses: actions/download-artifact@v2
+        with:
+          name: terraform-plan-prod
+          path: terraform/prod
+
+      - name: Terraform Apply
+        run: |
+          cd terraform/prod
           terraform apply plan.out
