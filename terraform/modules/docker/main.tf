@@ -4,7 +4,23 @@ data "aws_caller_identity" "current" {}
 // Create an ECR repository
 resource "aws_ecr_repository" "repository" {
   name = var.repository_name
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+
+  image_tag_mutability = "IMMUTABLE"
+
+  encryption_configuration {
+    encryption_type = "KMS"
+    kms_key         = aws_kms_key.container.arn
+  }
 }
+
+resource "aws_kms_key" "container" {
+  description         = "KMS key for ECR repository encryption"
+  enable_key_rotation = true
+}
+
 
 // Tag and push the Docker image to the ECR repository
 resource "null_resource" "push_docker_image" {
