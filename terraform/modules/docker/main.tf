@@ -3,7 +3,7 @@ data "aws_caller_identity" "current" {}
 
 // Create an ECR repository
 resource "aws_ecr_repository" "repository" {
-  name = var.repository_name
+  name         = var.repository_name
   force_delete = true
   image_scanning_configuration {
     scan_on_push = true
