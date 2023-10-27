@@ -38,36 +38,12 @@ jobs:
           cd terraform/staging
           terraform plan -var="github_sha=${{ github.sha }}" 
 
-
-      - name: Archive Terraform data
-        run: |
-          tar -czvf terraform-staging-data.tar.gz -C terraform/staging .
-
-      - name: Upload Terraform data
-        uses: actions/upload-artifact@v2
-        with:
-          name: terraform-data-staging
-          path: terraform-staging-data.tar.gz
-
   terraform-apply-staging:
     needs: terraform-plan-staging
     runs-on: ubuntu-latest
     environment:
       name: staging
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Download Terraform data
-        uses: actions/download-artifact@v2
-        with:
-          name: terraform-data-staging
-          path: .
-
-      - name: Unarchive Terraform data
-        run: |
-          tar -xzvf terraform-staging-data.tar.gz -C terraform/staging
-
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -114,35 +90,12 @@ jobs:
           cd terraform/prod
           terraform plan -var="github_sha=${{ github.sha }}" 
 
-      - name: Archive Terraform data
-        run: |
-          tar -czvf terraform-prod-data.tar.gz -C terraform/prod .
-
-      - name: Upload Terraform data
-        uses: actions/upload-artifact@v2
-        with:
-          name: terraform-data-prod
-          path: terraform-prod-data.tar.gz
-
   terraform-apply-prod:
     needs: terraform-plan-prod
     runs-on: ubuntu-latest
     environment:
       name: prod
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Download Terraform data
-        uses: actions/download-artifact@v2
-        with:
-          name: terraform-data-prod
-          path: .
-
-      - name: Unarchive Terraform data
-        run: |
-          tar -xzvf terraform-prod-data.tar.gz -C terraform/prod
-
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
