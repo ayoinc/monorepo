@@ -59,7 +59,7 @@ jobs:
       - name: Terraform Apply
         run: |
           cd terraform/staging
-          terraform apply --auto-approve--auto-approve
+          terraform apply --auto-approve
 
   terraform-plan-prod:
     needs: terraform-apply-staging
