@@ -36,7 +36,13 @@ jobs:
       - name: Terraform Plan
         run: |
           cd terraform/staging
-          terraform plan -var="github_sha=${{ github.sha }}" 
+          terraform plan -var="github_sha=${{ github.sha }}" -out=plan.out
+
+      - name: Upload Terraform Plan
+        uses: actions/upload-artifact@v2
+        with:
+          name: terraform-plan-staging
+          path: terraform/staging/plan.out
 
   terraform-apply-staging:
     needs: terraform-plan-staging
@@ -44,6 +50,9 @@ jobs:
     environment:
       name: staging
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -56,10 +65,16 @@ jobs:
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
+      - name: Download Terraform Plan
+        uses: actions/download-artifact@v2
+        with:
+          name: terraform-plan-staging
+          path: terraform/staging
+
       - name: Terraform Apply
         run: |
           cd terraform/staging
-          terraform apply --auto-approve
+          terraform apply plan.out
 
   terraform-plan-prod:
     needs: terraform-apply-staging
@@ -88,7 +103,13 @@ jobs:
       - name: Terraform Plan
         run: |
           cd terraform/prod
-          terraform plan -var="github_sha=${{ github.sha }}" 
+          terraform plan -var="github_sha=${{ github.sha }}" -out=plan.out
+
+      - name: Upload Terraform Plan
+        uses: actions/upload-artifact@v2
+        with:
+          name: terraform-plan-prod
+          path: terraform/prod/plan.out
 
   terraform-apply-prod:
     needs: terraform-plan-prod
@@ -96,6 +117,9 @@ jobs:
     environment:
       name: prod
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -108,7 +132,13 @@ jobs:
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
+      - name: Download Terraform Plan
+        uses: actions/download-artifact@v2
+        with:
+          name: terraform-plan-prod
+          path: terraform/prod
+
       - name: Terraform Apply
         run: |
           cd terraform/prod
-          terraform apply --auto-approve
+          terraform apply plan.out
