@@ -1,4 +1,4 @@
-variable "github_sha" {
-  description = "The GitHub commit SHA."
-  type        = string
+variable "github_sha" {}
+variable "environment" {
+  default = "staging"
 }
