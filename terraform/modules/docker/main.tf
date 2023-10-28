@@ -3,7 +3,7 @@ data "aws_caller_identity" "current" {}
 
 // Create an ECR repository
 resource "aws_ecr_repository" "repository" {
-  name         = var.repository_name
+  name         = "${var.repository_name}-${environment}"
   force_delete = true
   image_scanning_configuration {
     scan_on_push = true
@@ -15,6 +15,10 @@ resource "aws_ecr_repository" "repository" {
     encryption_type = "KMS"
     kms_key         = aws_kms_key.container.arn
   }
+}
+
+output "repository_url" {
+  value = aws_ecr_repository.repository.repository_url
 }
 
 resource "aws_kms_key" "container" {
