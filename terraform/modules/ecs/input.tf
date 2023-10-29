@@ -5,17 +5,17 @@ variable "region" {
 
 variable "ecs_cluster_name" {
   description = "Name of the ECS cluster."
-  default     = "my-ecs-cluster"
+  default     = "container-ecs-cluster"
 }
 
 variable "service_name" {
   description = "Name of the ECS service."
-  default     = "my-service"
+  default     = "container-service"
 }
 
 variable "task_definition_family" {
   description = "Family name of the task definition."
-  default     = "my-task-definition"
+  default     = "container-task-definition"
 }
 
 variable "container_name" {

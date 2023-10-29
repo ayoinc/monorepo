@@ -51,20 +51,38 @@ resource "aws_ecs_task_definition" "task_definition" {
     "essential": true,
     "portMappings": [
       {
-        "containerPort": 3000
+        "containerPort": 80
       }
-    ]
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-region": "${var.region}",
+        "awslogs-group": "${aws_cloudwatch_log_group.log_group.name}",
+        "awslogs-stream-prefix": "ecs"
+      }
+    }
   }
 ]
 DEFINITION
 }
 
+resource "aws_cloudwatch_log_group" "log_group" {
+  name              = "${var.service_name}-log-group"
+  retention_in_days = 30
+}
+
+
 resource "aws_ecs_service" "service" {
-  name            = var.service_name
-  cluster         = aws_ecs_cluster.cluster.id
-  task_definition = aws_ecs_task_definition.task_definition.arn
-  desired_count   = 1
-  launch_type     = "FARGATE"
+  name                               = var.service_name
+  cluster                            = aws_ecs_cluster.cluster.id
+  task_definition                    = aws_ecs_task_definition.task_definition.arn
+  desired_count                      = 1
+  deployment_minimum_healthy_percent = 50
+  deployment_maximum_percent         = 200
+  health_check_grace_period_seconds  = 60
+  launch_type                        = "FARGATE"
+  scheduling_strategy                = "REPLICA"
 
   network_configuration {
     subnets          = var.networking
@@ -75,7 +93,7 @@ resource "aws_ecs_service" "service" {
   load_balancer {
     target_group_arn = var.target_group
     container_name   = var.container_name
-    container_port   = 3000
+    container_port   = 80
   }
 }
 

@@ -13,8 +13,8 @@ RUN npm install
 # Copy the application files to the working directory
 COPY . .
 
-# Expose port 3000 for the application
-EXPOSE 3000
+# Expose port 80 for the application
+EXPOSE 80
 
 # Run the application
 CMD ["node", "app.js"]
