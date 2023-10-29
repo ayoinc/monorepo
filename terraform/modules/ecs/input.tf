@@ -20,7 +20,7 @@ variable "task_definition_family" {
 
 variable "container_name" {
   description = "Name of the container within the task."
-  default     = "my-container"
+  default     = "dockerise"
 }
 
 variable "repository_url" {
@@ -31,3 +31,5 @@ variable "networking" {
   description = "Networking resources from the networking module."
   type        = any
 }
+
+variable "target_group" {}

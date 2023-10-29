@@ -1,6 +1,12 @@
 resource "aws_ecs_cluster" "cluster" {
   name = var.ecs_cluster_name
+
+  setting {
+    name  = "containerInsights"
+    value = "enabled"
+  }
 }
+
 
 resource "aws_iam_role" "ecs_execution_role" {
   name               = "ecs_execution_role"
@@ -45,8 +51,7 @@ resource "aws_ecs_task_definition" "task_definition" {
     "essential": true,
     "portMappings": [
       {
-        "containerPort": 3000,
-        "hostPort": 80
+        "containerPort": 3000
       }
     ]
   }
@@ -66,8 +71,29 @@ resource "aws_ecs_service" "service" {
     security_groups  = [aws_security_group.ecs_security_group.id]
     assign_public_ip = false
   }
+
+  load_balancer {
+    target_group_arn = var.target_group
+    container_name   = var.container_name
+    container_port   = 3000
+  }
 }
 
 resource "aws_security_group" "ecs_security_group" {
   vpc_id = var.networking.vpc_id
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
+

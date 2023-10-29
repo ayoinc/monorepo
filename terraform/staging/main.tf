@@ -16,4 +16,5 @@ module "ecs" {
   container_name         = "env-container"
   repository_url         = module.docker.repository_url
   networking             = module.networking
+  target_group           = module.networking.target_group
 }
