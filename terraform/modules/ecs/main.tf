@@ -80,7 +80,7 @@ resource "aws_ecs_service" "service" {
 }
 
 resource "aws_security_group" "ecs_security_group" {
-  vpc_id = var.networking.vpc_id
+  vpc_id = var.vpc_id
 
   ingress {
     from_port   = 80
