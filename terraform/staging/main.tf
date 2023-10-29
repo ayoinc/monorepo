@@ -15,6 +15,6 @@ module "ecs" {
   task_definition_family = "env-task-definition"
   container_name         = "env-container"
   repository_url         = module.docker.repository_url
-  networking             = module.networking
+  networking             = module.networking.private_subnet_ids
   target_group           = module.networking.target_group
 }

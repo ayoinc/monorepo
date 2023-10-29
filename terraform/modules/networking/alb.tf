@@ -20,7 +20,6 @@ resource "aws_lb_listener" "listener" {
   }
 }
 
-
 resource "aws_lb_target_group" "target_group" {
   name        = "container-target-group"
   port        = 3000
@@ -39,5 +38,17 @@ resource "aws_lb_target_group" "target_group" {
   }
 }
 
+resource "aws_lb_listener_rule" "listener_rule" {
+  listener_arn = aws_lb_listener.listener.arn
 
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.target_group.arn
+  }
 
+  condition {
+    path_pattern {
+      values = ["/*"]
+    }
+  }
+}
