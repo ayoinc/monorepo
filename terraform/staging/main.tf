@@ -17,4 +17,5 @@ module "ecs" {
   repository_url         = module.docker.repository_url
   networking             = module.networking.private_subnet_ids
   target_group           = module.networking.target_group
+  vpc_id                 = module.networking.vpc_id
 }

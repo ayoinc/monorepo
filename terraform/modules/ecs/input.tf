@@ -33,3 +33,4 @@ variable "networking" {
 }
 
 variable "target_group" {}
+variable "vpc_id" {}
